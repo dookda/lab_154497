@@ -1,0 +1,16 @@
+GET http://localhost:3000/api/v1/data/
+
+###
+GET http://localhost:3000/api/v1/data/A2
+
+
+###
+POST http://localhost:3000/api/v1/data/
+Content-Type: application/json
+
+{
+    "sta_code": "A4",
+    "sta_name": "Station 5",
+    "pm25": 53.3,
+    "temp": 30
+}

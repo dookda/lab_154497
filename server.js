@@ -1,13 +1,17 @@
 const express = require('express');
 const app = express();
 const pg = require('pg');
+const bodyParser = require('body-parser')
+
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
 // create a pool
 const pool = new pg.Pool({
     user: "sakdahomhuan",
     password: "1234",
     host: "localhost",
-    database: "engrids",
+    database: "engridsdb",
     port: 5432
 })
 
@@ -34,6 +38,30 @@ app.get('/api/v1/data', (req, res) => {
     });
 });
 
+app.get('/api/v1/data/:sta_code', (req, res) => {
+    const sta_code = req.params.sta_code;
+    const sql = 'SELECT * FROM iot WHERE sta_code = $1';
+    pool.query(sql, [sta_code], (error, result) => {
+        if (error) {
+            throw error;
+        }
+        res.status(200).json(result.rows);
+    });
+});
+
+app.post('/api/v1/data', (req, res) => {
+    const { sta_code, sta_name, pm25, temp } = req.body;
+    const sql = 'INSERT INTO iot (sta_code, sta_name, pm25, temp) VALUES ($1, $2, $3, $4)';
+    pool.query(sql, [sta_code, sta_name, pm25, temp], (error, result) => {
+        if (error) {
+            throw error;
+        }
+        res.status(201).json({ status: `Station added with ID: ${sta_code}` });
+    });
+});
+
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });
+
+
