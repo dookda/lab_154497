@@ -50,9 +50,11 @@ app.get('/api/v1/data/:sta_code', (req, res) => {
 });
 
 app.post('/api/v1/data', (req, res) => {
-    const { sta_code, sta_name, pm25, temp } = req.body;
+    const { sta_code, sta_name, hum, temp } = req.body;
+    console.log(req.body);
+
     const sql = 'INSERT INTO iot (sta_code, sta_name, pm25, temp) VALUES ($1, $2, $3, $4)';
-    pool.query(sql, [sta_code, sta_name, pm25, temp], (error, result) => {
+    pool.query(sql, [sta_code, sta_name, hum, temp], (error, result) => {
         if (error) {
             throw error;
         }
