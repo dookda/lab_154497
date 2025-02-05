@@ -28,7 +28,7 @@ app.get('/api', (req, res) => {
 });
 
 app.get('/api/v1/data', (req, res) => {
-    const sql = 'SELECT * FROM iot';
+    const sql = 'SELECT * FROM iot ORDER BY gid DESC LIMIT 100';
     pool.query(sql, (error, result) => {
         if (error) {
             throw error;
