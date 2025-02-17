@@ -1,90 +1,76 @@
-async function fetchData() {
-    try {
-        const response = await fetch('http://localhost:3000/api/v1/data/A4');
-        const data = await response.json();
-        return data;
-    } catch (error) {
-        console.error('เกิดข้อผิดพลาดในการดึงข้อมูล:', error);
-    }
-}
+function renderChart() {
+    fetch('http://localhost:3000/api/v1/data/A4')
+        .then(response => response.json())
+        .then(data => {
+            // console.log(data)
+            let dataTemp = []
+            let dataPm25 = []
+            let cate = []
+            data.forEach(i => {
+                dataTemp.push(Number(i.temp))
+                dataPm25.push(Number(i.pm25))
+                cate.push(new Date(i.ts).toLocaleString('th-TH'))
+            })
 
-async function renderChart() {
-    const data = await fetchData();
+            var baseOptions = {
+                chart: {
+                    height: 350,
+                    type: 'line',
+                    zoom: {
+                        enabled: false
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'straight'
+                },
+                title: {
+                    text: 'Product Trends by Month',
+                    align: 'left'
+                },
+                grid: {
+                    row: {
+                        colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+                        opacity: 0.5
+                    },
+                },
+            }
 
-    // แปลงข้อมูลจาก API
-    const categories = data.map(item => new Date(item.ts).toLocaleString('th-TH'));
-    const tempSeries = data.map(item => parseFloat(item.temp));
-    const rhSeries = data.map(item => parseFloat(item.rh));
+            var optionsTemp = {
+                ...baseOptions,
+                series: [{
+                    name: "Desktops",
+                    data: dataTemp
+                }],
 
-    // สร้าง options เบื้องต้นที่ใช้ร่วมกันได้ (สำหรับข้อมูล xaxis และ chart)
-    const baseOptions = {
-        chart: {
-            type: 'line',
-            height: 350
-        },
-        xaxis: {
-            categories: categories,
-            title: {
-                text: 'เวลา'
-            },
-            labels: {
-                rotate: -45,
-                style: {
-                    fontSize: '10px'
+                xaxis: {
+                    categories: cate,
                 }
-            }
-        },
-        title: {
-            text: '',
-            align: 'center'
-        }
-    };
+            };
+            var divTemp = document.querySelector("#chartTemp");
+            var chartTemp = new ApexCharts(divTemp, optionsTemp);
+            chartTemp.render();
 
-    // สร้าง options สำหรับกราฟอุณหภูมิ โดยรวม baseOptions และเพิ่มการตั้งค่าเฉพาะของ yaxis และ series
-    const tempChartOptions = {
-        ...baseOptions,
-        series: [{
-            name: 'อุณหภูมิ',
-            data: tempSeries
-        }],
-        yaxis: {
-            title: {
-                text: 'อุณหภูมิ (°C)'
-            }
-        }
-    };
-
-    // สร้าง options สำหรับกราฟความชื้น
-    const rhChartOptions = {
-        ...baseOptions,
-        series: [{
-            name: 'ความชื้น',
-            data: rhSeries
-        }],
-        yaxis: {
-            title: {
-                text: 'ความชื้น (%)'
-            }
-        }
-    };
-
-    // สร้างอินสแตนซ์สำหรับกราฟอุณหภูมิ
-    const tempChartElem = document.querySelector("#tempChart");
-    const tempChart = new ApexCharts(tempChartElem, tempChartOptions);
-    tempChart.render();
-
-    // สร้างอินสแตนซ์สำหรับกราฟความชื้น
-    const rhChartElem = document.querySelector("#rhChart");
-    const rhChart = new ApexCharts(rhChartElem, rhChartOptions);
-    rhChart.render();
+            var optionsPm25 = {
+                ...baseOptions,
+                series: [{
+                    name: "Desktops",
+                    data: dataPm25
+                }],
+                xaxis: {
+                    categories: cate,
+                }
+            };
+            var divPm25 = document.querySelector("#chartPm25");
+            var chartPm25 = new ApexCharts(divPm25, optionsPm25);
+            chartPm25.render();
+        })
 }
 
-// เรียก renderChart เมื่อหน้าเว็บโหลดเสร็จ
-window.onload = renderChart;
+window.onload = renderChart
 
-// รีเฟรชกราฟทุก 6 วินาที
 setInterval(() => {
-    renderChart();
-}, 6000);
-
-
+    renderChart()
+}, 6000)

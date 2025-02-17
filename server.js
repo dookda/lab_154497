@@ -40,7 +40,7 @@ app.get('/api/v1/data', (req, res) => {
 
 app.get('/api/v1/data/:sta_code', (req, res) => {
     const sta_code = req.params.sta_code;
-    const sql = 'SELECT * FROM iot WHERE sta_code = $1 ORDER BY gid DESC LIMIT 100';
+    const sql = 'SELECT * FROM iot WHERE sta_code = $1 ORDER BY ts DESC LIMIT 100';
     pool.query(sql, [sta_code], (error, result) => {
         if (error) {
             throw error;
