@@ -21,7 +21,7 @@ app.use('/', express.static('www'));
 app.get('/api', (req, res) => {
     res.status(200).json({
         faname: 'John',
-        laname: 'Wick',
+        laname: 'sakda Wick',
         id: 123456789,
         status: 'success'
     })
